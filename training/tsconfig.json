@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"outDir": "./build",
+		"rootDir": ".",
+		"target": "ESNext",
+		"moduleResolution": "NodeNext",
+		"module": "NodeNext",
+		"esModuleInterop": true,
+		"allowImportingTsExtensions": true,
+		"noEmit": true
+	},
+}

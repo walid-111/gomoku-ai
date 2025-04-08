@@ -1,0 +1,110 @@
+name: CI
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test
+        run: make test
+
+  clippy:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: "-Dwarnings"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clippy
+        run: make clippy
+
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Cache
+        id: install-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            ~/valgrind
+            ./game-rs/target/release
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}
+
+      # https://stackoverflow.com/a/59277514
+      - name: Install Valgrind
+        env:
+          CACHE_HIT: ${{ steps.install-cache.outputs.cache-hit }}
+        run: |
+          if [[ "$CACHE_HIT" == 'true' ]]; then
+            sudo cp --verbose --force --recursive ~/valgrind/* /
+          else
+            sudo apt install valgrind
+            mkdir -p ~/valgrind
+            sudo dpkg -L valgrind | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/valgrind/
+          fi
+
+      - name: Install iai-callgrind-runner
+        if: steps.install-cache.outputs.cache-hit != 'true'
+        run: |
+          version=$(cd game-rs && cargo metadata --format-version=1 |\
+            jq '.packages[] | select(.name == "iai-callgrind").version' |\
+            tr -d '"'
+          )
+          cargo install iai-callgrind-runner --version $version
+          mkdir -p ./game-rs/target/iai
+
+      - name: Restore Bench Data
+        uses: actions/cache@v4
+        with:
+          path: ./game-rs/target/iai
+          key: bench-data-${{ github.run_id }}
+          restore-keys: bench-data
+
+      - name: Bench
+        run: make bench
+
+  build:
+    if: github.ref == 'refs/heads/master'
+    needs: [test]
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      # environment created automatically by GitHub
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Install npm dependencies
+        run: npm i
+
+      - name: Build
+        run: make all
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./build"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
