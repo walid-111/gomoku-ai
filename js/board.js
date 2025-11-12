@@ -22,9 +22,10 @@ function pos(i) {
 }
 
 export function drawBoard() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#e3b465';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.strokeStyle = '#000';
+  ctx.strokeStyle = '#5c4320';
   ctx.lineWidth = 1;
   for (let i = 0; i < SIZE; i++) {
     ctx.beginPath();
@@ -33,5 +34,15 @@ export function drawBoard() {
     ctx.moveTo(pos(i), pos(0));
     ctx.lineTo(pos(i), pos(SIZE - 1));
     ctx.stroke();
+  }
+
+  // the 9 little dots
+  ctx.fillStyle = '#5c4320';
+  for (const x of [3, 9, 15]) {
+    for (const y of [3, 9, 15]) {
+      ctx.beginPath();
+      ctx.arc(pos(x), pos(y), cell * 0.12, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 }
