@@ -51,11 +51,23 @@ export function drawBoard(game) {
   }
 }
 
-function drawStone(x, y, player) {
+function drawStone(x, y, player, alpha = 1) {
+  const r = cell * 0.45;
+  // little gradient so they look a bit round
+  const light = ctx.createRadialGradient(pos(x) - r / 3, pos(y) - r / 3, r / 10, pos(x), pos(y), r);
+  if (player === BLACK) {
+    light.addColorStop(0, '#555');
+    light.addColorStop(1, '#111');
+  } else {
+    light.addColorStop(0, '#fff');
+    light.addColorStop(1, '#ccc');
+  }
+  ctx.globalAlpha = alpha;
   ctx.beginPath();
-  ctx.arc(pos(x), pos(y), cell * 0.45, 0, Math.PI * 2);
-  ctx.fillStyle = player === BLACK ? '#111' : '#f5f5f5';
+  ctx.arc(pos(x), pos(y), r, 0, Math.PI * 2);
+  ctx.fillStyle = light;
   ctx.fill();
+  ctx.globalAlpha = 1;
 }
 
 // which cell was clicked, or -1 if outside the board
