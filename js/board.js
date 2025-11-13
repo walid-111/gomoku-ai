@@ -1,6 +1,6 @@
 // everything about drawing the board on the canvas
 
-export const SIZE = 19;
+import { SIZE, BLACK, EMPTY } from './rules.js';
 
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
@@ -21,7 +21,7 @@ function pos(i) {
   return cell * (i + 1);
 }
 
-export function drawBoard() {
+export function drawBoard(game) {
   ctx.fillStyle = '#e3b465';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -45,4 +45,24 @@ export function drawBoard() {
       ctx.fill();
     }
   }
+
+  for (let i = 0; i < game.board.length; i++) {
+    if (game.board[i] !== EMPTY) drawStone(i % SIZE, Math.floor(i / SIZE), game.board[i]);
+  }
+}
+
+function drawStone(x, y, player) {
+  ctx.beginPath();
+  ctx.arc(pos(x), pos(y), cell * 0.45, 0, Math.PI * 2);
+  ctx.fillStyle = player === BLACK ? '#111' : '#f5f5f5';
+  ctx.fill();
+}
+
+// which cell was clicked, or -1 if outside the board
+export function cellAt(event) {
+  const rect = canvas.getBoundingClientRect();
+  const x = Math.round((event.clientX - rect.left) / cell - 1);
+  const y = Math.round((event.clientY - rect.top) / cell - 1);
+  if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) return -1;
+  return y * SIZE + x;
 }
