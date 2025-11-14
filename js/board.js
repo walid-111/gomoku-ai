@@ -21,7 +21,8 @@ function pos(i) {
   return cell * (i + 1);
 }
 
-export function drawBoard(game) {
+// hover = cell under the mouse (or -1), drawn as a see-through stone
+export function drawBoard(game, hover = -1) {
   ctx.fillStyle = '#e3b465';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -48,6 +49,10 @@ export function drawBoard(game) {
 
   for (let i = 0; i < game.board.length; i++) {
     if (game.board[i] !== EMPTY) drawStone(i % SIZE, Math.floor(i / SIZE), game.board[i]);
+  }
+
+  if (hover !== -1 && game.board[hover] === EMPTY) {
+    drawStone(hover % SIZE, Math.floor(hover / SIZE), game.player, 0.5);
   }
 }
 
