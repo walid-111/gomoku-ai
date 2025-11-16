@@ -1,12 +1,19 @@
 import { resizeBoard, drawBoard, cellAt } from './board.js';
-import { newGame, play } from './rules.js';
+import { newGame, play, BLACK } from './rules.js';
 
 const canvas = document.getElementById('board');
+const status = document.getElementById('status');
 let game = newGame();
 let hover = -1;
 
+function colorName(player) {
+  return player === BLACK ? 'Black' : 'White';
+}
+
 function draw() {
   drawBoard(game, hover);
+  if (game.winner) status.textContent = `${colorName(game.winner)} wins!`;
+  else status.textContent = `${colorName(game.player)} to play`;
 }
 
 canvas.addEventListener('click', (event) => {
