@@ -51,7 +51,15 @@ export function drawBoard(game, hover = -1) {
     if (game.board[i] !== EMPTY) drawStone(i % SIZE, Math.floor(i / SIZE), game.board[i]);
   }
 
-  if (hover !== -1 && game.board[hover] === EMPTY) {
+  // red dots on the winning stones
+  for (const i of game.winLine) {
+    ctx.beginPath();
+    ctx.arc(pos(i % SIZE), pos(Math.floor(i / SIZE)), cell * 0.12, 0, Math.PI * 2);
+    ctx.fillStyle = '#e53935';
+    ctx.fill();
+  }
+
+  if (hover !== -1 && !game.winner && game.board[hover] === EMPTY) {
     drawStone(hover % SIZE, Math.floor(hover / SIZE), game.player, 0.5);
   }
 }
