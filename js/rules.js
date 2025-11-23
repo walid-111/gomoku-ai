@@ -16,6 +16,7 @@ export function newGame() {
     player: BLACK, // whose turn it is
     captures: [0, 0, 0], // pairs captured, by player (index 0 not used)
     winner: EMPTY,
+    winReason: '',
     winLine: [],
   };
 }
@@ -88,8 +89,12 @@ export function play(game, index) {
   game.captures[game.player] += capture(game.board, index).length / 2;
 
   const five = findFive(game.board, index);
-  if (five) {
+  if (game.captures[game.player] >= 5) {
     game.winner = game.player;
+    game.winReason = '5 captures';
+  } else if (five) {
+    game.winner = game.player;
+    game.winReason = '5 in a row';
     game.winLine = five;
   }
 
