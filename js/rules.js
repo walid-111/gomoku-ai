@@ -50,11 +50,10 @@ function lineThrough(board, index, dx, dy) {
   return line;
 }
 
-// X O O X -> the stone at index takes the 2 stones in between
-// returns the captured cells
-function capture(board, index) {
-  const me = board[index];
-  const other = opponent(me);
+// X O O X -> a stone of player at index would take the 2 stones in between
+// returns the cells that would be captured (doesn't touch the board)
+function findCaptures(board, index, player) {
+  const other = opponent(player);
   const x = index % SIZE;
   const y = Math.floor(index / SIZE);
   const captured = [];
@@ -62,15 +61,52 @@ function capture(board, index) {
   for (const [dx, dy] of ALL_DIRECTIONS) {
     if (stoneAt(board, x + dx, y + dy) === other
       && stoneAt(board, x + 2 * dx, y + 2 * dy) === other
-      && stoneAt(board, x + 3 * dx, y + 3 * dy) === me) {
-      const a = (y + dy) * SIZE + x + dx;
-      const b = (y + 2 * dy) * SIZE + x + 2 * dx;
-      board[a] = EMPTY;
-      board[b] = EMPTY;
-      captured.push(a, b);
+      && stoneAt(board, x + 3 * dx, y + 3 * dy) === player) {
+      captured.push((y + dy) * SIZE + x + dx, (y + 2 * dy) * SIZE + x + 2 * dx);
     }
   }
   return captured;
+}
+
+// free three = 3 stones that become an open four if nobody blocks them.
+// we look at 6 cells in a row: both ends empty, and in the 4 cells in the middle
+// 3 of our stones + 1 empty (_XXX__, __XXX_, _XX_X_, _X_XX_)
+function isFreeThree(board, index, dx, dy) {
+  const me = board[index];
+  const x = index % SIZE;
+  const y = Math.floor(index / SIZE);
+
+  // our stone has to be in the middle part, so the 6 cells start 1 to 4 cells before it
+  for (let start = -4; start <= -1; start++) {
+    const cells = [];
+    for (let k = start; k < start + 6; k++) cells.push(stoneAt(board, x + k * dx, y + k * dy));
+
+    const middle = cells.slice(1, 5);
+    if (cells[0] === EMPTY && cells[5] === EMPTY
+      && middle.filter((c) => c === me).length === 3
+      && middle.filter((c) => c === EMPTY).length === 1) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// you can't make 2 free threes with one move, except if the move captures something
+function isDoubleThree(board, index, player) {
+  if (findCaptures(board, index, player).length > 0) return false;
+
+  board[index] = player; // try the move for a sec
+  let count = 0;
+  for (const [dx, dy] of DIRECTIONS) {
+    if (isFreeThree(board, index, dx, dy)) count++;
+  }
+  board[index] = EMPTY;
+  return count >= 2;
+}
+
+export function isLegal(game, index) {
+  if (game.winner || game.board[index] !== EMPTY) return false;
+  return !isDoubleThree(game.board, index, game.player);
 }
 
 // returns the line if the stone at index makes 5 or more in a row
@@ -83,10 +119,12 @@ export function findFive(board, index) {
 }
 
 export function play(game, index) {
-  if (game.winner || game.board[index] !== EMPTY) return false;
+  if (!isLegal(game, index)) return false;
 
+  const captured = findCaptures(game.board, index, game.player);
+  for (const i of captured) game.board[i] = EMPTY;
   game.board[index] = game.player;
-  game.captures[game.player] += capture(game.board, index).length / 2;
+  game.captures[game.player] += captured.length / 2;
 
   const five = findFive(game.board, index);
   if (game.captures[game.player] >= 5) {

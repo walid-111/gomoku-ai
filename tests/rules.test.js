@@ -39,3 +39,26 @@ test('playing in between two stones is not a capture', () => {
   assert.strictEqual(game.board[at(11, 9)], WHITE);
   assert.strictEqual(game.captures[BLACK], 0);
 });
+
+test('double free three is not allowed', () => {
+  const game = newGame();
+  // black: 9,9 10,9 (horizontal) and 11,10 11,11 (vertical), white plays far away
+  playAll(game, [[9, 9], [0, 0], [10, 9], [0, 2], [11, 10], [0, 4], [11, 11], [0, 6]]);
+  // 11,9 would make _XXX_ horizontally and vertically
+  assert.strictEqual(play(game, at(11, 9)), false);
+  assert.strictEqual(game.board[at(11, 9)], EMPTY);
+});
+
+test('a single free three is fine', () => {
+  const game = newGame();
+  playAll(game, [[9, 9], [0, 0], [10, 9], [0, 2]]);
+  assert.strictEqual(play(game, at(11, 9)), true);
+});
+
+test('double free three is allowed when it captures', () => {
+  const game = newGame();
+  // same shape as before, but white has a pair on the diagonal that 11,9 takes
+  playAll(game, [[9, 9], [12, 8], [10, 9], [13, 7], [11, 10], [0, 0], [11, 11], [0, 2], [14, 6], [0, 4]]);
+  assert.strictEqual(play(game, at(11, 9)), true);
+  assert.strictEqual(game.captures[BLACK], 1);
+});
