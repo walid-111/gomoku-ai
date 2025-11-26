@@ -1,6 +1,6 @@
 // everything about drawing the board on the canvas
 
-import { SIZE, BLACK, EMPTY } from './rules.js';
+import { SIZE, BLACK, EMPTY, isLegal } from './rules.js';
 
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
@@ -60,7 +60,8 @@ export function drawBoard(game, hover = -1) {
   }
 
   if (hover !== -1 && !game.winner && game.board[hover] === EMPTY) {
-    drawStone(hover % SIZE, Math.floor(hover / SIZE), game.player, 0.5);
+    if (isLegal(game, hover)) drawStone(hover % SIZE, Math.floor(hover / SIZE), game.player, 0.5);
+    else drawCross(hover % SIZE, Math.floor(hover / SIZE));
   }
 }
 
@@ -81,6 +82,19 @@ function drawStone(x, y, player, alpha = 1) {
   ctx.fillStyle = light;
   ctx.fill();
   ctx.globalAlpha = 1;
+}
+
+// red cross = you can't play here
+function drawCross(x, y) {
+  const r = cell * 0.25;
+  ctx.strokeStyle = '#e53935';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(pos(x) - r, pos(y) - r);
+  ctx.lineTo(pos(x) + r, pos(y) + r);
+  ctx.moveTo(pos(x) + r, pos(y) - r);
+  ctx.lineTo(pos(x) - r, pos(y) + r);
+  ctx.stroke();
 }
 
 // which cell was clicked, or -1 if outside the board
