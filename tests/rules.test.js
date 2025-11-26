@@ -62,3 +62,24 @@ test('double free three is allowed when it captures', () => {
   assert.strictEqual(play(game, at(11, 9)), true);
   assert.strictEqual(game.captures[BLACK], 1);
 });
+
+test('a five that can be broken is not a win yet, and the other player has to break it', () => {
+  const game = newGame();
+  // black makes 5 on row 9 (5,9 to 9,9). black also has 7,10 under 7,9 and white has 7,11,
+  // so white can capture 7,9 + 7,10 by playing 7,8
+  playAll(game, [[5, 9], [7, 11], [6, 9], [0, 0], [7, 10], [0, 2], [8, 9], [0, 4], [7, 9], [0, 6], [9, 9]]);
+  assert.strictEqual(game.winner, EMPTY);
+  assert.deepStrictEqual(game.forced, [at(7, 8)]);
+
+  // white can only play the breaking move
+  assert.strictEqual(play(game, at(15, 15)), false);
+  assert.strictEqual(play(game, at(7, 8)), true);
+  assert.strictEqual(game.board[at(7, 9)], EMPTY);
+  assert.strictEqual(game.forced, null);
+});
+
+test('a five that cannot be broken wins', () => {
+  const game = newGame();
+  playAll(game, [[5, 9], [0, 0], [6, 9], [0, 2], [7, 9], [0, 4], [8, 9], [0, 6], [9, 9]]);
+  assert.strictEqual(game.winner, BLACK);
+});

@@ -15,6 +15,7 @@ export function newGame() {
     board: new Array(SIZE * SIZE).fill(EMPTY),
     player: BLACK, // whose turn it is
     captures: [0, 0, 0], // pairs captured, by player (index 0 not used)
+    forced: null, // when there's a five that can be broken, the only moves allowed
     winner: EMPTY,
     winReason: '',
     winLine: [],
@@ -106,7 +107,25 @@ function isDoubleThree(board, index, player) {
 
 export function isLegal(game, index) {
   if (game.winner || game.board[index] !== EMPTY) return false;
+  if (game.forced) return game.forced.includes(index);
   return !isDoubleThree(game.board, index, game.player);
+}
+
+// moves that let player capture a pair out of the five, so it's not 5 in a row anymore
+function movesThatBreak(board, line, player) {
+  const moves = [];
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] !== EMPTY) continue;
+    const captured = findCaptures(board, i, player);
+    if (captured.length === 0) continue;
+
+    // try it on a copy and check there's no five left
+    const copy = board.slice();
+    for (const c of captured) copy[c] = EMPTY;
+    copy[i] = player;
+    if (!line.some((c) => copy[c] !== EMPTY && findFive(copy, c))) moves.push(i);
+  }
+  return moves;
 }
 
 // returns the line if the stone at index makes 5 or more in a row
@@ -125,15 +144,23 @@ export function play(game, index) {
   for (const i of captured) game.board[i] = EMPTY;
   game.board[index] = game.player;
   game.captures[game.player] += captured.length / 2;
+  game.forced = null;
+  game.winLine = [];
 
   const five = findFive(game.board, index);
   if (game.captures[game.player] >= 5) {
     game.winner = game.player;
     game.winReason = '5 captures';
   } else if (five) {
-    game.winner = game.player;
-    game.winReason = '5 in a row';
     game.winLine = five;
+    // the other player can still save himself by capturing in the five
+    const breaks = movesThatBreak(game.board, five, opponent(game.player));
+    if (breaks.length > 0) {
+      game.forced = breaks;
+    } else {
+      game.winner = game.player;
+      game.winReason = '5 in a row';
+    }
   }
 
   game.player = opponent(game.player);
