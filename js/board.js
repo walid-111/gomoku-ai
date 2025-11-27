@@ -59,6 +59,15 @@ export function drawBoard(game, hover = -1) {
     ctx.fill();
   }
 
+  // the only moves allowed when a five has to be broken
+  for (const i of game.forced || []) {
+    ctx.beginPath();
+    ctx.arc(pos(i % SIZE), pos(Math.floor(i / SIZE)), cell * 0.3, 0, Math.PI * 2);
+    ctx.strokeStyle = '#2e7d32';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+
   if (hover !== -1 && !game.winner && game.board[hover] === EMPTY) {
     if (isLegal(game, hover)) drawStone(hover % SIZE, Math.floor(hover / SIZE), game.player, 0.5);
     else drawCross(hover % SIZE, Math.floor(hover / SIZE));
