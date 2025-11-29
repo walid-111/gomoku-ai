@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { newGame, play, SIZE, BLACK, WHITE, EMPTY } from '../js/rules.js';
+import { newGame, play, undo, SIZE, BLACK, WHITE, EMPTY } from '../js/rules.js';
 
 const at = (x, y) => y * SIZE + x;
 
@@ -82,4 +82,13 @@ test('a five that cannot be broken wins', () => {
   const game = newGame();
   playAll(game, [[5, 9], [0, 0], [6, 9], [0, 2], [7, 9], [0, 4], [8, 9], [0, 6], [9, 9]]);
   assert.strictEqual(game.winner, BLACK);
+});
+
+test('undo puts everything back, captured stones too', () => {
+  const game = newGame();
+  playAll(game, [[9, 9], [10, 9], [5, 5], [11, 9]]);
+  const before = JSON.stringify(game);
+  play(game, at(12, 9)); // captures
+  undo(game);
+  assert.strictEqual(JSON.stringify(game), before);
 });

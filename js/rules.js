@@ -15,6 +15,7 @@ export function newGame() {
     board: new Array(SIZE * SIZE).fill(EMPTY),
     player: BLACK, // whose turn it is
     captures: [0, 0, 0], // pairs captured, by player (index 0 not used)
+    moves: [], // everything played, so we can undo
     forced: null, // when there's a five that can be broken, the only moves allowed
     winner: EMPTY,
     winReason: '',
@@ -141,6 +142,7 @@ export function play(game, index) {
   if (!isLegal(game, index)) return false;
 
   const captured = findCaptures(game.board, index, game.player);
+  game.moves.push({ index, player: game.player, captured, forced: game.forced, winLine: game.winLine });
   for (const i of captured) game.board[i] = EMPTY;
   game.board[index] = game.player;
   game.captures[game.player] += captured.length / 2;
@@ -165,4 +167,18 @@ export function play(game, index) {
 
   game.player = opponent(game.player);
   return true;
+}
+
+export function undo(game) {
+  const last = game.moves.pop();
+  if (!last) return;
+
+  game.board[last.index] = EMPTY;
+  for (const i of last.captured) game.board[i] = opponent(last.player);
+  game.captures[last.player] -= last.captured.length / 2;
+  game.player = last.player;
+  game.forced = last.forced;
+  game.winLine = last.winLine;
+  game.winner = EMPTY;
+  game.winReason = '';
 }

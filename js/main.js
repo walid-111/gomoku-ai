@@ -1,5 +1,5 @@
 import { resizeBoard, drawBoard, cellAt } from './board.js';
-import { newGame, play, BLACK } from './rules.js';
+import { newGame, play, undo, BLACK } from './rules.js';
 
 const canvas = document.getElementById('board');
 const status = document.getElementById('status');
@@ -34,6 +34,11 @@ canvas.addEventListener('mousemove', (event) => {
 
 canvas.addEventListener('mouseleave', () => {
   hover = -1;
+  draw();
+});
+
+document.getElementById('undo').addEventListener('click', () => {
+  undo(game);
   draw();
 });
 
