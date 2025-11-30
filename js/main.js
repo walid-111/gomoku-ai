@@ -47,6 +47,11 @@ document.getElementById('undo').addEventListener('click', () => {
   draw();
 });
 
+document.getElementById('new-game').addEventListener('click', () => {
+  game = newGame();
+  draw();
+});
+
 window.addEventListener('resize', () => {
   resizeBoard();
   draw();
