@@ -1,16 +1,96 @@
 body {
   margin: 0;
+  min-height: 100vh;
   font-family: system-ui, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   background: #2b2d31;
   color: #eee;
 }
 
+main {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px;
+}
+
 #board {
-  width: min(90vw, 90vh);
+  width: min(85vh, calc(100vw - 340px));
   aspect-ratio: 1;
   border-radius: 6px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+aside {
+  width: 260px;
+}
+
+h1 {
+  margin: 0 0 16px;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: #383a40;
+  border: 2px solid transparent;
+}
+
+/* whose turn it is */
+.player.active {
+  border-color: #e3b465;
+}
+
+.player .name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.stone {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.stone.black {
+  background: #111;
+  box-shadow: 0 0 0 1px #666;
+}
+
+.stone.white {
+  background: #f5f5f5;
+}
+
+.captures {
+  font-size: 14px;
+  color: #aaa;
+}
+
+#status {
+  min-height: 1.4em;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #e3b465;
+  color: #222;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #edc47e;
 }

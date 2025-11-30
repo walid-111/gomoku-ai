@@ -15,7 +15,12 @@ function draw() {
   if (game.winner) status.textContent = `${colorName(game.winner)} wins with ${game.winReason}!`;
   else if (game.forced) status.textContent = `${colorName(game.player)} has to break the five!`;
   else status.textContent = `${colorName(game.player)} to play`;
-  status.textContent += ` (captures: black ${game.captures[1]}, white ${game.captures[2]})`;
+
+  for (const player of [1, 2]) {
+    const card = document.getElementById(`player-${player}`);
+    card.classList.toggle('active', !game.winner && game.player === player);
+    card.querySelector('.captures').textContent = `${game.captures[player]}/5 captures`;
+  }
 }
 
 canvas.addEventListener('click', (event) => {

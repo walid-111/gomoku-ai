@@ -8,10 +8,30 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>Gomoku</h1>
-  <p id="status"></p>
-  <button id="undo">Undo</button>
-  <canvas id="board"></canvas>
+  <main>
+    <canvas id="board"></canvas>
+
+    <aside>
+      <h1>Gomoku</h1>
+
+      <div class="player" id="player-1">
+        <span class="stone black"></span>
+        <span class="name">Black</span>
+        <span class="captures"></span>
+      </div>
+      <div class="player" id="player-2">
+        <span class="stone white"></span>
+        <span class="name">White</span>
+        <span class="captures"></span>
+      </div>
+
+      <p id="status"></p>
+
+      <div class="buttons">
+        <button id="undo">Undo</button>
+      </div>
+    </aside>
+  </main>
 
   <script type="module" src="js/main.js"></script>
 </body>
