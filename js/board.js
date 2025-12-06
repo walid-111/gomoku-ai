@@ -51,6 +51,15 @@ export function drawBoard(game, hover = -1) {
     if (game.board[i] !== EMPTY) drawStone(i % SIZE, Math.floor(i / SIZE), game.board[i]);
   }
 
+  // small mark on the last stone played
+  const last = game.moves.at(-1);
+  if (last && game.board[last.index] !== EMPTY) {
+    ctx.beginPath();
+    ctx.arc(pos(last.index % SIZE), pos(Math.floor(last.index / SIZE)), cell * 0.1, 0, Math.PI * 2);
+    ctx.fillStyle = last.player === BLACK ? '#fff' : '#111';
+    ctx.fill();
+  }
+
   // red dots on the winning stones
   for (const i of game.winLine) {
     ctx.beginPath();
