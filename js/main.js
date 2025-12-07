@@ -1,5 +1,6 @@
 import { resizeBoard, drawBoard, cellAt } from './board.js';
 import { newGame, play, undo, BLACK, SIZE } from './rules.js';
+import { playSound, isMuted, toggleMute } from './sounds.js';
 
 const canvas = document.getElementById('board');
 const status = document.getElementById('status');
@@ -35,12 +36,17 @@ function draw() {
     movesList.appendChild(li);
   }
   movesList.scrollTop = movesList.scrollHeight;
+
+  document.getElementById('sound').textContent = isMuted() ? 'Sound off' : 'Sound on';
 }
 
 canvas.addEventListener('click', (event) => {
   const index = cellAt(event);
   if (index === -1) return;
-  if (play(game, index)) draw();
+  if (play(game, index)) {
+    playSound(game.winner ? 'win' : 'place');
+    draw();
+  }
 });
 
 canvas.addEventListener('mousemove', (event) => {
@@ -63,6 +69,11 @@ document.getElementById('undo').addEventListener('click', () => {
 
 document.getElementById('new-game').addEventListener('click', () => {
   game = newGame();
+  draw();
+});
+
+document.getElementById('sound').addEventListener('click', () => {
+  toggleMute();
   draw();
 });
 
