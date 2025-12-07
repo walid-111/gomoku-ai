@@ -1,13 +1,19 @@
 import { resizeBoard, drawBoard, cellAt } from './board.js';
-import { newGame, play, undo, BLACK } from './rules.js';
+import { newGame, play, undo, BLACK, SIZE } from './rules.js';
 
 const canvas = document.getElementById('board');
 const status = document.getElementById('status');
+const movesList = document.getElementById('moves');
 let game = newGame();
 let hover = -1;
 
 function colorName(player) {
   return player === BLACK ? 'Black' : 'White';
+}
+
+// like on a real board: letter for the column, number for the row (1 at the bottom)
+function moveName(index) {
+  return 'ABCDEFGHIJKLMNOPQRS'[index % SIZE] + (SIZE - Math.floor(index / SIZE));
 }
 
 function draw() {
@@ -21,6 +27,14 @@ function draw() {
     card.classList.toggle('active', !game.winner && game.player === player);
     card.querySelector('.captures').textContent = `${game.captures[player]}/5 captures`;
   }
+
+  movesList.innerHTML = '';
+  for (const move of game.moves) {
+    const li = document.createElement('li');
+    li.textContent = moveName(move.index) + (move.captured.length ? ' x' + move.captured.length / 2 : '');
+    movesList.appendChild(li);
+  }
+  movesList.scrollTop = movesList.scrollHeight;
 }
 
 canvas.addEventListener('click', (event) => {

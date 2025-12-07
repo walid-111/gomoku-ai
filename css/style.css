@@ -94,3 +94,19 @@ button {
 button:hover {
   background: #edc47e;
 }
+
+#moves {
+  margin: 16px 0 0;
+  padding: 10px 10px 10px 36px;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #383a40;
+  border-radius: 8px;
+  columns: 2;
+  font-size: 14px;
+  color: #ccc;
+}
+
+#moves:empty {
+  display: none;
+}
