@@ -1,12 +1,14 @@
 import { resizeBoard, drawBoard, cellAt } from './board.js';
-import { newGame, play, undo, BLACK, SIZE } from './rules.js';
+import { newGame, play, undo, BLACK, WHITE, SIZE } from './rules.js';
 import { playSound, isMuted, toggleMute } from './sounds.js';
+import { bestMove } from './ai.js';
 
 const canvas = document.getElementById('board');
 const status = document.getElementById('status');
 const movesList = document.getElementById('moves');
 let game = newGame();
 let hover = -1;
+const computer = WHITE; // the computer plays white for now
 
 function colorName(player) {
   return player === BLACK ? 'Black' : 'White';
@@ -40,13 +42,22 @@ function draw() {
   document.getElementById('sound').textContent = isMuted() ? 'Sound off' : 'Sound on';
 }
 
+function makeMove(index) {
+  if (!play(game, index)) return false;
+  playSound(game.winner ? 'win' : 'place');
+  draw();
+  return true;
+}
+
+function computerTurn() {
+  if (game.winner || game.player !== computer) return;
+  setTimeout(() => makeMove(bestMove(game).move), 300);
+}
+
 canvas.addEventListener('click', (event) => {
   const index = cellAt(event);
-  if (index === -1) return;
-  if (play(game, index)) {
-    playSound(game.winner ? 'win' : 'place');
-    draw();
-  }
+  if (index === -1 || game.player === computer) return;
+  if (makeMove(index)) computerTurn();
 });
 
 canvas.addEventListener('mousemove', (event) => {
