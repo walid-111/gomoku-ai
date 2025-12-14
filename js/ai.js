@@ -1,7 +1,8 @@
-// the computer player
+// the computer player: minimax, it looks a few moves ahead
 
 import { SIZE, EMPTY, play, undo, isLegal, opponent } from './rules.js';
 
+const WIN = 1000000;
 const DIRECTIONS = [[1, 0], [0, 1], [1, 1], [1, -1]];
 
 // score of a group of 5 cells, by how many of our stones are in it (if no enemy stone)
@@ -61,17 +62,36 @@ function candidates(game) {
   return moves;
 }
 
-// try every move and keep the one that leaves the best board
+// negamax: the score is always for the player who has to play
+function search(game, depth) {
+  // the player before just won
+  if (game.winner) return -WIN - depth;
+  if (depth === 0) return evaluate(game, game.player);
+
+  const moves = candidates(game);
+  if (moves.length === 0) return 0;
+
+  let best = -Infinity;
+  for (const move of moves) {
+    play(game, move);
+    const score = -search(game, depth - 1);
+    undo(game);
+    if (score > best) best = score;
+  }
+  return best;
+}
+
+const DEPTH = 2;
+
 export function bestMove(game) {
   const moves = candidates(game);
   if (moves.length === 0) return { move: Math.floor(game.board.length / 2) };
 
-  const me = game.player;
   let best = moves[0];
   let bestScore = -Infinity;
   for (const move of moves) {
     play(game, move);
-    const score = game.winner === me ? Infinity : evaluate(game, me);
+    const score = -search(game, DEPTH - 1);
     undo(game);
     if (score > bestScore) {
       bestScore = score;
