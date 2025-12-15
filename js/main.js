@@ -1,7 +1,6 @@
 import { resizeBoard, drawBoard, cellAt } from './board.js';
 import { newGame, play, undo, BLACK, WHITE, SIZE } from './rules.js';
 import { playSound, isMuted, toggleMute } from './sounds.js';
-import { bestMove } from './ai.js';
 
 const canvas = document.getElementById('board');
 const status = document.getElementById('status');
@@ -9,6 +8,9 @@ const movesList = document.getElementById('moves');
 let game = newGame();
 let hover = -1;
 const computer = WHITE; // the computer plays white for now
+let thinking = false;
+
+const worker = new Worker('js/worker.js', { type: 'module' });
 
 function colorName(player) {
   return player === BLACK ? 'Black' : 'White';
@@ -23,6 +25,7 @@ function draw() {
   drawBoard(game, hover);
   if (game.winner) status.textContent = `${colorName(game.winner)} wins with ${game.winReason}!`;
   else if (game.forced) status.textContent = `${colorName(game.player)} has to break the five!`;
+  else if (thinking) status.textContent = 'Computer is thinking...';
   else status.textContent = `${colorName(game.player)} to play`;
 
   for (const player of [1, 2]) {
@@ -51,8 +54,15 @@ function makeMove(index) {
 
 function computerTurn() {
   if (game.winner || game.player !== computer) return;
-  setTimeout(() => makeMove(bestMove(game).move), 300);
+  thinking = true;
+  draw();
+  worker.postMessage(game);
 }
+
+worker.onmessage = (event) => {
+  thinking = false;
+  makeMove(event.data.move);
+};
 
 canvas.addEventListener('click', (event) => {
   const index = cellAt(event);
