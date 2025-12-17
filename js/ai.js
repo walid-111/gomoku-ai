@@ -1,12 +1,16 @@
 // the computer player: minimax with alpha-beta, it looks a few moves ahead
+// and keeps going deeper until the time is up
 
-import { SIZE, EMPTY, play, undo, isLegal, opponent } from './rules.js';
+import { SIZE, EMPTY, play, undo, isLegal } from './rules.js';
 
 const WIN = 1000000;
 const DIRECTIONS = [[1, 0], [0, 1], [1, 1], [1, -1]];
 
 // score of a group of 5 cells, by how many of our stones are in it (if no enemy stone)
 const WINDOW_SCORES = [0, 1, 10, 100, 1000, 100000];
+
+let deadline = 0;
+const TIMEOUT = 'timeout';
 
 function cell(board, x, y) {
   if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) return -1;
@@ -81,6 +85,11 @@ function candidates(game, limit) {
     if (near && isLegal(game, i)) moves.push(i);
   }
 
+  // empty board: middle
+  if (moves.length === 0 && board[Math.floor(board.length / 2)] === EMPTY) {
+    return [Math.floor(board.length / 2)];
+  }
+
   return moves
     .map((move) => ({ move, score: moveScore(game, move) }))
     .sort((a, b) => b.score - a.score)
@@ -93,6 +102,7 @@ function search(game, depth, alpha, beta) {
   // the player before just won
   if (game.winner) return -WIN - depth;
   if (depth === 0) return evaluate(game, game.player);
+  if (Date.now() > deadline) throw TIMEOUT;
 
   const moves = candidates(game, 10);
   if (moves.length === 0) return 0;
@@ -110,22 +120,42 @@ function search(game, depth, alpha, beta) {
   return best;
 }
 
-const DEPTH = 4;
-
-export function bestMove(game) {
-  const moves = candidates(game, 15);
-  if (moves.length === 0) return { move: Math.floor(game.board.length / 2) };
+// returns { move, depth } for the player whose turn it is
+export function bestMove(game, timeLimit = 500) {
+  deadline = Date.now() + timeLimit;
+  let moves = candidates(game, 15);
+  if (moves.length <= 1) return { move: moves[0], depth: 0 };
 
   let best = moves[0];
-  let alpha = -Infinity;
-  for (const move of moves) {
-    play(game, move);
-    const score = -search(game, DEPTH - 1, -Infinity, -alpha);
-    undo(game);
-    if (score > alpha) {
-      alpha = score;
-      best = move;
+  let bestDepth = 0;
+
+  for (let depth = 1; depth <= 10; depth++) {
+    // work on a copy, if the time runs out in the middle the board is a mess
+    const copy = structuredClone(game);
+    let alpha = -Infinity;
+    let bestHere = moves[0];
+
+    try {
+      for (const move of moves) {
+        play(copy, move);
+        const score = -search(copy, depth - 1, -Infinity, -alpha);
+        undo(copy);
+        if (score > alpha) {
+          alpha = score;
+          bestHere = move;
+        }
+      }
+    } catch (error) {
+      if (error !== TIMEOUT) throw error;
+      break; // keep the result of the last depth we finished
     }
+
+    best = bestHere;
+    bestDepth = depth;
+    // best move first next time, alpha-beta cuts a lot more like that
+    moves = [best, ...moves.filter((m) => m !== best)];
+    if (alpha >= WIN) break; // found a win, no need to look further
   }
-  return { move: best };
+
+  return { move: best, depth: bestDepth };
 }

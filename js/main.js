@@ -60,8 +60,10 @@ function computerTurn() {
 }
 
 worker.onmessage = (event) => {
+  const { move, time, depth } = event.data;
   thinking = false;
-  makeMove(event.data.move);
+  document.getElementById('ai-time').textContent = `Computer took ${(time / 1000).toFixed(2)}s (${depth} moves ahead)`;
+  makeMove(move);
 };
 
 canvas.addEventListener('click', (event) => {
