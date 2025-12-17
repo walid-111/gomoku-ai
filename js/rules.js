@@ -54,7 +54,7 @@ function lineThrough(board, index, dx, dy) {
 
 // X O O X -> a stone of player at index would take the 2 stones in between
 // returns the cells that would be captured (doesn't touch the board)
-function findCaptures(board, index, player) {
+export function findCaptures(board, index, player) {
   const other = opponent(player);
   const x = index % SIZE;
   const y = Math.floor(index / SIZE);

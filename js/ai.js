@@ -1,13 +1,15 @@
 // the computer player: minimax with alpha-beta, it looks a few moves ahead
 // and keeps going deeper until the time is up
 
-import { SIZE, EMPTY, play, undo, isLegal } from './rules.js';
+import { SIZE, EMPTY, play, undo, isLegal, opponent, findCaptures } from './rules.js';
 
 const WIN = 1000000;
 const DIRECTIONS = [[1, 0], [0, 1], [1, 1], [1, -1]];
 
 // score of a group of 5 cells, by how many of our stones are in it (if no enemy stone)
 const WINDOW_SCORES = [0, 1, 10, 100, 1000, 100000];
+// captures get scary fast, 5 is a win
+const CAPTURE_SCORES = [0, 300, 1000, 3000, 10000, WIN];
 
 let deadline = 0;
 const TIMEOUT = 'timeout';
@@ -22,7 +24,7 @@ function cell(board, x, y) {
 // it's a possible five for him, and more stones = better
 export function evaluate(game, player) {
   const board = game.board;
-  let score = 0;
+  let score = CAPTURE_SCORES[game.captures[player]] - CAPTURE_SCORES[game.captures[opponent(player)]];
 
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
@@ -50,7 +52,7 @@ function moveScore(game, index) {
   const board = game.board;
   const x = index % SIZE;
   const y = Math.floor(index / SIZE);
-  let score = 0;
+  let score = findCaptures(board, index, game.player).length * 50;
 
   for (const [dx, dy] of DIRECTIONS) {
     // stones touching this cell on both sides, for both players
