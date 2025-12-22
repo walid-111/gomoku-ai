@@ -9,6 +9,7 @@ let game = newGame();
 let hover = -1;
 const computer = WHITE; // the computer plays white for now
 let thinking = false;
+let request = 0; // to know which answer from the computer is the latest one
 
 const worker = new Worker('js/worker.js', { type: 'module' });
 
@@ -55,11 +56,14 @@ function makeMove(index) {
 function computerTurn() {
   if (game.winner || game.player !== computer) return;
   thinking = true;
+  request++;
   draw();
-  worker.postMessage(game);
+  worker.postMessage({ game, request });
 }
 
 worker.onmessage = (event) => {
+  // undo or new game while it was thinking, the answer is for an old board
+  if (!thinking || event.data.request !== request) return;
   const { move, time, depth } = event.data;
   thinking = false;
   document.getElementById('ai-time').textContent = `Computer took ${(time / 1000).toFixed(2)}s (${depth} moves ahead)`;
@@ -86,11 +90,16 @@ canvas.addEventListener('mouseleave', () => {
 });
 
 document.getElementById('undo').addEventListener('click', () => {
+  thinking = false;
   undo(game);
+  // take back the computer's move too, so it's your turn again
+  if (game.player === computer && game.moves.length > 0) undo(game);
   draw();
+  computerTurn(); // if the computer started, it has to play again
 });
 
 document.getElementById('new-game').addEventListener('click', () => {
+  thinking = false;
   game = newGame();
   draw();
 });

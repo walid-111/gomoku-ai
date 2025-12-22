@@ -3,7 +3,8 @@
 import { bestMove } from './ai.js';
 
 onmessage = (event) => {
+  const { game, request } = event.data;
   const start = performance.now();
-  const result = bestMove(event.data);
-  postMessage({ ...result, time: performance.now() - start });
+  const result = bestMove(game);
+  postMessage({ ...result, request, time: performance.now() - start });
 };
