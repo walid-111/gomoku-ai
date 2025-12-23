@@ -117,3 +117,37 @@ button:hover {
 #moves:empty {
   display: none;
 }
+
+dialog {
+  border: none;
+  border-radius: 12px;
+  padding: 24px;
+  background: #383a40;
+  color: #eee;
+  min-width: 280px;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+dialog h2 {
+  margin-top: 0;
+}
+
+dialog label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+select {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  font: inherit;
+  font-size: 16px;
+}

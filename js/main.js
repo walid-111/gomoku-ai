@@ -1,5 +1,5 @@
 import { resizeBoard, drawBoard, cellAt } from './board.js';
-import { newGame, play, undo, BLACK, WHITE, SIZE } from './rules.js';
+import { newGame, play, undo, opponent, BLACK, WHITE, EMPTY, SIZE } from './rules.js';
 import { playSound, isMuted, toggleMute } from './sounds.js';
 
 const canvas = document.getElementById('board');
@@ -7,7 +7,8 @@ const status = document.getElementById('status');
 const movesList = document.getElementById('moves');
 let game = newGame();
 let hover = -1;
-const computer = WHITE; // the computer plays white for now
+let computer = WHITE; // EMPTY when 2 people play
+const menu = document.getElementById('menu');
 let thinking = false;
 let request = 0; // to know which answer from the computer is the latest one
 
@@ -98,10 +99,19 @@ document.getElementById('undo').addEventListener('click', () => {
   computerTurn(); // if the computer started, it has to play again
 });
 
-document.getElementById('new-game').addEventListener('click', () => {
+document.getElementById('new-game').addEventListener('click', () => menu.showModal());
+
+menu.addEventListener('close', () => {
+  if (menu.returnValue !== 'start') return;
+  const form = new FormData(menu.querySelector('form'));
+  const you = Number(form.get('color'));
+  computer = form.get('mode') === 'computer' ? opponent(you) : EMPTY;
+
   thinking = false;
   game = newGame();
+  document.getElementById('ai-time').textContent = '';
   draw();
+  computerTurn(); // the computer starts if you took white
 });
 
 document.getElementById('sound').addEventListener('click', () => {
@@ -116,3 +126,4 @@ window.addEventListener('resize', () => {
 
 resizeBoard();
 draw();
+menu.showModal();

@@ -38,6 +38,27 @@
     </aside>
   </main>
 
+  <dialog id="menu">
+    <form method="dialog">
+      <h2>New game</h2>
+      <label>
+        Mode
+        <select name="mode">
+          <option value="computer">Against the computer</option>
+          <option value="local">2 players</option>
+        </select>
+      </label>
+      <label>
+        You play
+        <select name="color">
+          <option value="1">Black (you start)</option>
+          <option value="2">White</option>
+        </select>
+      </label>
+      <button value="start">Start</button>
+    </form>
+  </dialog>
+
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
