@@ -18,6 +18,12 @@ function colorName(player) {
   return player === BLACK ? 'Black' : 'White';
 }
 
+// "You" and "Computer" when playing against it, colors when 2 people play
+function playerName(player) {
+  if (computer === EMPTY) return colorName(player);
+  return player === computer ? 'Computer' : 'You';
+}
+
 // like on a real board: letter for the column, number for the row (1 at the bottom)
 function moveName(index) {
   return 'ABCDEFGHIJKLMNOPQRS'[index % SIZE] + (SIZE - Math.floor(index / SIZE));
@@ -25,15 +31,17 @@ function moveName(index) {
 
 function draw() {
   drawBoard(game, hover);
-  if (game.winner) status.textContent = `${colorName(game.winner)} wins with ${game.winReason}!`;
-  else if (game.forced) status.textContent = `${colorName(game.player)} has to break the five!`;
+  const name = playerName(game.player);
+  if (game.winner) status.textContent = `${playerName(game.winner)} won with ${game.winReason}!`;
   else if (thinking) status.textContent = 'Computer is thinking...';
-  else status.textContent = `${colorName(game.player)} to play`;
+  else if (game.forced) status.textContent = `${name} has to break the five!`;
+  else status.textContent = name === 'You' ? 'Your turn' : `${name} to play`;
 
   for (const player of [1, 2]) {
     const card = document.getElementById(`player-${player}`);
     card.classList.toggle('active', !game.winner && game.player === player);
     card.querySelector('.captures').textContent = `${game.captures[player]}/5 captures`;
+    card.querySelector('.name').textContent = playerName(player);
   }
 
   movesList.innerHTML = '';
