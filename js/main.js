@@ -37,6 +37,12 @@ function draw() {
   else if (game.forced) status.textContent = `${name} has to break the five!`;
   else status.textContent = name === 'You' ? 'Your turn' : `${name} to play`;
 
+  // remind the opening rule when it matters
+  if (game.opening !== 'standard' && game.moves.length === 0) status.textContent += ' (in the middle)';
+  if (game.opening !== 'standard' && game.moves.length === 2) {
+    status.textContent += ` (at least ${game.opening === 'pro' ? 3 : 4} cells from the middle)`;
+  }
+
   for (const player of [1, 2]) {
     const card = document.getElementById(`player-${player}`);
     card.classList.toggle('active', !game.winner && game.player === player);
@@ -116,7 +122,7 @@ menu.addEventListener('close', () => {
   computer = form.get('mode') === 'computer' ? opponent(you) : EMPTY;
 
   thinking = false;
-  game = newGame();
+  game = newGame(form.get('opening'));
   document.getElementById('ai-time').textContent = '';
   draw();
   computerTurn(); // the computer starts if you took white
