@@ -92,3 +92,19 @@ test('undo puts everything back, captured stones too', () => {
   undo(game);
   assert.strictEqual(JSON.stringify(game), before);
 });
+
+test('pro opening: first stone in the middle, black second stone 3+ cells away', () => {
+  const game = newGame('pro');
+  assert.strictEqual(play(game, at(3, 3)), false);
+  assert.strictEqual(play(game, at(9, 9)), true);
+  assert.strictEqual(play(game, at(10, 10)), true); // white can play anywhere
+  assert.strictEqual(play(game, at(10, 9)), false); // too close
+  assert.strictEqual(play(game, at(11, 10)), true); // 2 + 1 = 3 away
+});
+
+test('long pro opening needs 4 cells', () => {
+  const game = newGame('long-pro');
+  playAll(game, [[9, 9], [10, 10]]);
+  assert.strictEqual(play(game, at(11, 10)), false);
+  assert.strictEqual(play(game, at(13, 9)), true);
+});

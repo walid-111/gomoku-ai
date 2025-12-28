@@ -10,8 +10,12 @@ const DIRECTIONS = [[1, 0], [0, 1], [1, 1], [1, -1]];
 // same but both ways, for captures
 const ALL_DIRECTIONS = [...DIRECTIONS, ...DIRECTIONS.map(([dx, dy]) => [-dx, -dy])];
 
-export function newGame() {
+// openings: 'standard' (no rule), 'pro' and 'long-pro'.
+// pro = the first stone goes in the middle, and black's 2nd stone has to be
+// at least 3 cells away from it (4 for long pro). makes it harder for black to win easily
+export function newGame(opening = 'standard') {
   return {
+    opening,
     board: new Array(SIZE * SIZE).fill(EMPTY),
     player: BLACK, // whose turn it is
     captures: [0, 0, 0], // pairs captured, by player (index 0 not used)
@@ -106,9 +110,24 @@ function isDoubleThree(board, index, player) {
   return count >= 2;
 }
 
+const CENTER = Math.floor(SIZE * SIZE / 2);
+
+function openingAllows(game, index) {
+  if (game.opening === 'standard') return true;
+  const turn = game.moves.length;
+  if (turn === 0) return index === CENTER;
+  if (turn === 2) {
+    const distance = Math.abs(index % SIZE - CENTER % SIZE)
+      + Math.abs(Math.floor(index / SIZE) - Math.floor(CENTER / SIZE));
+    return distance >= (game.opening === 'pro' ? 3 : 4);
+  }
+  return true;
+}
+
 export function isLegal(game, index) {
   if (game.winner || game.board[index] !== EMPTY) return false;
   if (game.forced) return game.forced.includes(index);
+  if (!openingAllows(game, index)) return false;
   return !isDoubleThree(game.board, index, game.player);
 }
 
