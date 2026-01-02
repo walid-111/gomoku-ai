@@ -22,7 +22,8 @@ function pos(i) {
 }
 
 // hover = cell under the mouse (or -1), drawn as a see-through stone
-export function drawBoard(game, hover = -1) {
+// hint = move suggested by the computer (or -1)
+export function drawBoard(game, hover = -1, hint = -1) {
   ctx.fillStyle = '#e3b465';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -73,6 +74,14 @@ export function drawBoard(game, hover = -1) {
     ctx.beginPath();
     ctx.arc(pos(i % SIZE), pos(Math.floor(i / SIZE)), cell * 0.3, 0, Math.PI * 2);
     ctx.strokeStyle = '#2e7d32';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+
+  if (hint !== -1) {
+    ctx.beginPath();
+    ctx.arc(pos(hint % SIZE), pos(Math.floor(hint / SIZE)), cell * 0.35, 0, Math.PI * 2);
+    ctx.strokeStyle = '#1e88e5';
     ctx.lineWidth = 3;
     ctx.stroke();
   }

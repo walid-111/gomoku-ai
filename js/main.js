@@ -10,6 +10,8 @@ let hover = -1;
 let computer = WHITE; // EMPTY when 2 people play
 const menu = document.getElementById('menu');
 let thinking = false;
+let askedHint = false; // the computer is thinking for you, not for itself
+let hint = -1;
 let request = 0; // to know which answer from the computer is the latest one
 
 const worker = new Worker('js/worker.js', { type: 'module' });
@@ -30,10 +32,10 @@ function moveName(index) {
 }
 
 function draw() {
-  drawBoard(game, hover);
+  drawBoard(game, hover, hint);
   const name = playerName(game.player);
   if (game.winner) status.textContent = `${playerName(game.winner)} won with ${game.winReason}!`;
-  else if (thinking) status.textContent = 'Computer is thinking...';
+  else if (thinking) status.textContent = askedHint ? 'Looking for a good move...' : 'Computer is thinking...';
   else if (game.forced) status.textContent = `${name} has to break the five!`;
   else status.textContent = name === 'You' ? 'Your turn' : `${name} to play`;
 
@@ -63,6 +65,7 @@ function draw() {
 
 function makeMove(index) {
   if (!play(game, index)) return false;
+  hint = -1;
   playSound(game.winner ? 'win' : 'place');
   draw();
   return true;
@@ -81,6 +84,14 @@ worker.onmessage = (event) => {
   if (!thinking || event.data.request !== request) return;
   const { move, time, depth } = event.data;
   thinking = false;
+
+  if (askedHint) {
+    askedHint = false;
+    hint = move;
+    draw();
+    return;
+  }
+
   document.getElementById('ai-time').textContent = `Computer took ${(time / 1000).toFixed(2)}s (${depth} moves ahead)`;
   makeMove(move);
 };
@@ -104,8 +115,19 @@ canvas.addEventListener('mouseleave', () => {
   draw();
 });
 
+document.getElementById('hint').addEventListener('click', () => {
+  if (thinking || game.winner || game.player === computer) return;
+  askedHint = true;
+  thinking = true;
+  request++;
+  draw();
+  worker.postMessage({ game, request });
+});
+
 document.getElementById('undo').addEventListener('click', () => {
   thinking = false;
+  askedHint = false;
+  hint = -1;
   undo(game);
   // take back the computer's move too, so it's your turn again
   if (game.player === computer && game.moves.length > 0) undo(game);
@@ -122,6 +144,8 @@ menu.addEventListener('close', () => {
   computer = form.get('mode') === 'computer' ? opponent(you) : EMPTY;
 
   thinking = false;
+  askedHint = false;
+  hint = -1;
   game = newGame(form.get('opening'));
   document.getElementById('ai-time').textContent = '';
   draw();
