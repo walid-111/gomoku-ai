@@ -32,6 +32,7 @@
         <button id="undo">Undo</button>
         <button id="hint">Hint</button>
         <button id="new-game">New game</button>
+        <button id="rules-button">Rules</button>
         <button id="sound"></button>
       </div>
 
@@ -74,6 +75,22 @@
       <p id="game-over-reason"></p>
       <button value="again">Play again</button>
       <button value="close" class="secondary">See the board</button>
+    </form>
+  </dialog>
+
+  <dialog id="rules">
+    <form method="dialog">
+      <h2>Rules</h2>
+      <p><b>Goal:</b> line up 5 stones, or capture 5 pairs.</p>
+      <p><b>Capture:</b> put your stones on both sides of exactly 2 enemy stones and they're removed.
+        Playing in between 2 enemy stones yourself is safe.</p>
+      <p><b>Breaking a five:</b> a five only wins if the other player can't capture a pair out of it.
+        If he can, he has to do it right away.</p>
+      <p><b>Double three:</b> a free three is 3 stones that become an unstoppable four if nobody blocks them.
+        You can't make 2 of them with one move, except if that move captures.</p>
+      <p><b>Openings:</b> with Pro, the first stone goes in the middle and black's second stone at least
+        3 cells away from it (4 with Long pro).</p>
+      <button>Got it</button>
     </form>
   </dialog>
 

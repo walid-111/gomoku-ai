@@ -146,6 +146,7 @@ document.getElementById('undo').addEventListener('click', () => {
 });
 
 document.getElementById('new-game').addEventListener('click', () => menu.showModal());
+document.getElementById('rules-button').addEventListener('click', () => document.getElementById('rules').showModal());
 
 gameOver.addEventListener('close', () => {
   if (gameOver.returnValue === 'again') menu.showModal();
