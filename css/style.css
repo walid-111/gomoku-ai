@@ -102,6 +102,15 @@ button:hover {
   background: #edc47e;
 }
 
+button.secondary {
+  background: #4e5058;
+  color: #eee;
+}
+
+button.secondary:hover {
+  background: #5d5f68;
+}
+
 #moves {
   margin: 16px 0 0;
   padding: 10px 10px 10px 36px;

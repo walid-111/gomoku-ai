@@ -9,6 +9,7 @@ let game = newGame();
 let hover = -1;
 let computer = WHITE; // EMPTY when 2 people play
 const menu = document.getElementById('menu');
+const gameOver = document.getElementById('game-over');
 let thinking = false;
 let askedHint = false; // the computer is thinking for you, not for itself
 let hint = -1;
@@ -66,8 +67,17 @@ function draw() {
 function makeMove(index) {
   if (!play(game, index)) return false;
   hint = -1;
-  playSound(game.winner ? 'win' : 'place');
   draw();
+
+  if (!game.winner) {
+    playSound('place');
+  } else {
+    playSound(game.winner === computer ? 'loss' : 'win');
+    document.getElementById('game-over-title').textContent =
+      playerName(game.winner) === 'You' ? 'You won!' : `${playerName(game.winner)} won`;
+    document.getElementById('game-over-reason').textContent = `With ${game.winReason}.`;
+    gameOver.showModal();
+  }
   return true;
 }
 
@@ -98,7 +108,7 @@ worker.onmessage = (event) => {
 
 canvas.addEventListener('click', (event) => {
   const index = cellAt(event);
-  if (index === -1 || game.player === computer) return;
+  if (index === -1 || thinking || game.player === computer) return;
   if (makeMove(index)) computerTurn();
 });
 
@@ -136,6 +146,10 @@ document.getElementById('undo').addEventListener('click', () => {
 });
 
 document.getElementById('new-game').addEventListener('click', () => menu.showModal());
+
+gameOver.addEventListener('close', () => {
+  if (gameOver.returnValue === 'again') menu.showModal();
+});
 
 menu.addEventListener('close', () => {
   if (menu.returnValue !== 'start') return;
