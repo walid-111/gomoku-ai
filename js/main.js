@@ -5,11 +5,12 @@ import { playSound, isMuted, toggleMute } from './sounds.js';
 const canvas = document.getElementById('board');
 const status = document.getElementById('status');
 const movesList = document.getElementById('moves');
+const menu = document.getElementById('menu');
+const gameOver = document.getElementById('game-over');
+
 let game = newGame();
 let hover = -1;
 let computer = WHITE; // EMPTY when 2 people play
-const menu = document.getElementById('menu');
-const gameOver = document.getElementById('game-over');
 let thinking = false;
 let askedHint = false; // the computer is thinking for you, not for itself
 let hint = -1;
@@ -62,6 +63,23 @@ function draw() {
   movesList.scrollTop = movesList.scrollHeight;
 
   document.getElementById('sound').textContent = isMuted() ? 'Sound off' : 'Sound on';
+  saveGame();
+}
+
+// the game is saved as the list of moves, so a refresh doesn't lose it
+function saveGame() {
+  const moves = game.moves.map((move) => move.index);
+  localStorage.setItem('game', JSON.stringify({ moves, opening: game.opening, computer }));
+}
+
+function loadGame() {
+  const saved = JSON.parse(localStorage.getItem('game') || 'null');
+  if (!saved || saved.moves.length === 0) return false;
+
+  computer = saved.computer;
+  game = newGame(saved.opening);
+  for (const index of saved.moves) play(game, index);
+  return true;
 }
 
 function makeMove(index) {
@@ -178,5 +196,10 @@ window.addEventListener('resize', () => {
 });
 
 resizeBoard();
-draw();
-menu.showModal();
+if (loadGame()) {
+  draw();
+  computerTurn();
+} else {
+  draw();
+  menu.showModal();
+}
