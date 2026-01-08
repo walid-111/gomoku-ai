@@ -172,3 +172,25 @@ select {
   margin: 0 auto 8px;
   border-radius: 8px;
 }
+
+/* phones: board on top, panel under it */
+@media (max-width: 800px) {
+  main {
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  #board {
+    width: calc(100vw - 24px);
+  }
+
+  aside {
+    width: 100%;
+  }
+
+  h1 {
+    display: none;
+  }
+}
