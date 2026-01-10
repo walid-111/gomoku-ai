@@ -38,6 +38,16 @@ export function drawBoard(game, hover = -1, hint = -1) {
     ctx.stroke();
   }
 
+  // letters and numbers around, same names as in the moves list
+  ctx.fillStyle = '#5c4320';
+  ctx.font = `${Math.round(cell * 0.32)}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  for (let i = 0; i < SIZE; i++) {
+    ctx.fillText('ABCDEFGHIJKLMNOPQRS'[i], pos(i), cell * 0.45);
+    ctx.fillText(SIZE - i, cell * 0.45, pos(i));
+  }
+
   // the 9 little dots
   ctx.fillStyle = '#5c4320';
   for (const x of [3, 9, 15]) {
