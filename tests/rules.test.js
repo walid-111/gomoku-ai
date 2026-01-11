@@ -108,3 +108,18 @@ test('long pro opening needs 4 cells', () => {
   assert.strictEqual(play(game, at(11, 10)), false);
   assert.strictEqual(play(game, at(13, 9)), true);
 });
+
+test('full board is a draw', () => {
+  const game = newGame();
+  // fill everything except the last cell: runs of 3 on each row, so no five and no capture
+  for (let i = 0; i < SIZE * SIZE - 1; i++) {
+    const x = i % SIZE;
+    const y = Math.floor(i / SIZE);
+    game.board[i] = (x + 3 * y) % 6 < 3 ? BLACK : WHITE;
+  }
+  game.player = BLACK;
+  assert.strictEqual(play(game, SIZE * SIZE - 1), true);
+  assert.strictEqual(game.winner, EMPTY);
+  assert.strictEqual(game.winReason, 'draw');
+  assert.strictEqual(play(game, 0), false);
+});

@@ -125,7 +125,7 @@ function openingAllows(game, index) {
 }
 
 export function isLegal(game, index) {
-  if (game.winner || game.board[index] !== EMPTY) return false;
+  if (game.winner || game.winReason === 'draw' || game.board[index] !== EMPTY) return false;
   if (game.forced) return game.forced.includes(index);
   if (!openingAllows(game, index)) return false;
   return !isDoubleThree(game.board, index, game.player);
@@ -183,6 +183,9 @@ export function play(game, index) {
       game.winReason = '5 in a row';
     }
   }
+
+  // nowhere left to play, nobody wins
+  if (!game.winner && !game.board.includes(EMPTY)) game.winReason = 'draw';
 
   game.player = opponent(game.player);
   return true;

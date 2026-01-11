@@ -37,6 +37,7 @@ function draw() {
   drawBoard(game, hover, hint);
   const name = playerName(game.player);
   if (game.winner) status.textContent = `${playerName(game.winner)} won with ${game.winReason}!`;
+  else if (game.winReason === 'draw') status.textContent = 'Draw, the board is full';
   else if (thinking) status.textContent = askedHint ? 'Looking for a good move...' : 'Computer is thinking...';
   else if (game.forced) status.textContent = `${name} has to break the five!`;
   else status.textContent = name === 'You' ? 'Your turn' : `${name} to play`;
