@@ -152,7 +152,7 @@ document.getElementById('hint').addEventListener('click', () => {
   worker.postMessage({ game, request });
 });
 
-document.getElementById('undo').addEventListener('click', () => {
+function undoMove() {
   thinking = false;
   askedHint = false;
   hint = -1;
@@ -161,6 +161,13 @@ document.getElementById('undo').addEventListener('click', () => {
   if (game.player === computer && game.moves.length > 0) undo(game);
   draw();
   computerTurn(); // if the computer started, it has to play again
+}
+
+document.getElementById('undo').addEventListener('click', undoMove);
+
+// ctrl+z / cmd+z
+document.addEventListener('keydown', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key === 'z') undoMove();
 });
 
 document.getElementById('new-game').addEventListener('click', () => menu.showModal());
