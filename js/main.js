@@ -88,7 +88,11 @@ function makeMove(index) {
   hint = -1;
   draw();
 
-  if (!game.winner) {
+  if (game.winReason === 'draw') {
+    document.getElementById('game-over-title').textContent = 'Draw';
+    document.getElementById('game-over-reason').textContent = 'The board is full, nobody wins.';
+    gameOver.showModal();
+  } else if (!game.winner) {
     playSound('place');
   } else {
     playSound(game.winner === computer ? 'loss' : 'win');
@@ -121,7 +125,9 @@ worker.onmessage = (event) => {
     return;
   }
 
-  document.getElementById('ai-time').textContent = `Computer took ${(time / 1000).toFixed(2)}s (${depth} moves ahead)`;
+  document.getElementById('ai-time').textContent = depth === 0
+    ? 'Computer had only one choice'
+    : `Computer took ${(time / 1000).toFixed(2)}s (${depth} moves ahead)`;
   makeMove(move);
 };
 
