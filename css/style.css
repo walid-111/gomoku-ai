@@ -66,8 +66,23 @@ h1 {
 }
 
 .captures {
-  font-size: 14px;
-  color: #aaa;
+  display: flex;
+  gap: 4px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #666;
+}
+
+.dot.black {
+  background: #111;
+}
+
+.dot.white {
+  background: #f5f5f5;
 }
 
 #status {

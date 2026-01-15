@@ -51,7 +51,16 @@ function draw() {
   for (const player of [1, 2]) {
     const card = document.getElementById(`player-${player}`);
     card.classList.toggle('active', !game.winner && game.player === player);
-    card.querySelector('.captures').textContent = `${game.captures[player]}/5 captures`;
+    // 5 little circles, filled with the color of the stones taken
+    const captures = card.querySelector('.captures');
+    captures.innerHTML = '';
+    captures.title = `${game.captures[player]}/5 captures`;
+    for (let i = 0; i < 5; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      if (i < game.captures[player]) dot.classList.add(player === BLACK ? 'white' : 'black');
+      captures.appendChild(dot);
+    }
     card.querySelector('.name').textContent = playerName(player);
   }
 
