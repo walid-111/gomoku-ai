@@ -43,6 +43,8 @@ function draw() {
   else status.textContent = name === 'You' ? 'Your turn' : `${name} to play`;
 
   status.classList.toggle('thinking', thinking);
+  // handy when the game is in another tab
+  document.title = !game.winner && playerName(game.player) === 'You' && !thinking ? '(Your turn) Gomoku' : 'Gomoku';
 
   // remind the opening rule when it matters
   if (game.opening !== 'standard' && game.moves.length === 0) status.textContent += ' (in the middle)';
