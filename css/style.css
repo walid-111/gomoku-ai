@@ -90,6 +90,19 @@ h1 {
   margin-bottom: 4px;
 }
 
+/* animated "..." while the computer thinks */
+#status.thinking::after {
+  content: '';
+  animation: dots 1s steps(4) infinite;
+}
+
+@keyframes dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
 #ai-time {
   margin-top: 0;
   font-size: 14px;
