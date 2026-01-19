@@ -123,3 +123,11 @@ test('full board is a draw', () => {
   assert.strictEqual(game.winReason, 'draw');
   assert.strictEqual(play(game, 0), false);
 });
+
+test('capturing the end of a six is not a break, there is still a five', () => {
+  const game = newGame();
+  // black makes 4,9 to 9,9 (six) with the last move 8,9.
+  // white could take 4,9 + 4,10 by playing 4,8, but 5,9 to 9,9 would still be five
+  playAll(game, [[4, 10], [4, 11], [4, 9], [0, 0], [5, 9], [0, 2], [6, 9], [0, 4], [7, 9], [0, 6], [9, 9], [0, 8], [8, 9]]);
+  assert.strictEqual(game.winner, BLACK);
+});
