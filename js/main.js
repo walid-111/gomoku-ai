@@ -34,7 +34,9 @@ function moveName(index) {
 }
 
 function draw() {
-  drawBoard(game, hover, hint);
+  // no preview stone when it's not your turn
+  const yourTurn = !thinking && game.player !== computer;
+  drawBoard(game, yourTurn ? hover : -1, hint);
   const name = playerName(game.player);
   if (game.winner) status.textContent = `${playerName(game.winner)} won with ${game.winReason}!`;
   else if (game.winReason === 'draw') status.textContent = 'Draw, the board is full';
