@@ -1,9 +1,17 @@
+:root {
+  --background: #2b2d31;
+  --panel: #383a40;
+  --wood: #e3b465;
+  --text: #eee;
+  --muted: #aaa;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   font-family: system-ui, sans-serif;
-  background: #2b2d31;
-  color: #eee;
+  background: var(--background);
+  color: var(--text);
 }
 
 main {
@@ -36,13 +44,13 @@ h1 {
   padding: 10px 12px;
   margin-bottom: 8px;
   border-radius: 8px;
-  background: #383a40;
+  background: var(--panel);
   border: 2px solid transparent;
 }
 
 /* whose turn it is */
 .player.active {
-  border-color: #e3b465;
+  border-color: var(--wood);
 }
 
 .player .name {
@@ -106,7 +114,7 @@ h1 {
 #ai-time {
   margin-top: 0;
   font-size: 14px;
-  color: #aaa;
+  color: var(--muted);
 }
 
 .buttons {
@@ -119,7 +127,7 @@ button {
   padding: 8px 14px;
   border: none;
   border-radius: 6px;
-  background: #e3b465;
+  background: var(--wood);
   color: #222;
   font: inherit;
   font-weight: 600;
@@ -132,7 +140,7 @@ button:hover {
 
 button.secondary {
   background: #4e5058;
-  color: #eee;
+  color: var(--text);
 }
 
 button.secondary:hover {
@@ -144,7 +152,7 @@ button.secondary:hover {
   padding: 10px 10px 10px 36px;
   max-height: 260px;
   overflow-y: auto;
-  background: #383a40;
+  background: var(--panel);
   border-radius: 8px;
   columns: 2;
   font-size: 14px;
@@ -159,8 +167,8 @@ dialog {
   border: none;
   border-radius: 12px;
   padding: 24px;
-  background: #383a40;
-  color: #eee;
+  background: var(--panel);
+  color: var(--text);
   min-width: 280px;
 }
 
@@ -178,7 +186,7 @@ dialog label {
   gap: 6px;
   margin-bottom: 14px;
   font-size: 14px;
-  color: #aaa;
+  color: var(--muted);
 }
 
 select {
