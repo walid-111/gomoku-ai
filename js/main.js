@@ -33,10 +33,7 @@ function moveName(index) {
   return 'ABCDEFGHIJKLMNOPQRS'[index % SIZE] + (SIZE - Math.floor(index / SIZE));
 }
 
-function draw() {
-  // no preview stone when it's not your turn
-  const yourTurn = !thinking && game.player !== computer;
-  drawBoard(game, yourTurn ? hover : -1, hint);
+function drawStatus() {
   const name = playerName(game.player);
   if (game.winner) status.textContent = `${playerName(game.winner)} won with ${game.winReason}!`;
   else if (game.winReason === 'draw') status.textContent = 'Draw, the board is full';
@@ -44,19 +41,23 @@ function draw() {
   else if (game.forced) status.textContent = `${name} has to break the five!`;
   else status.textContent = name === 'You' ? 'Your turn' : `${name} to play`;
 
-  status.classList.toggle('thinking', thinking);
-  // handy when the game is in another tab
-  document.title = !game.winner && playerName(game.player) === 'You' && !thinking ? '(Your turn) Gomoku' : 'Gomoku';
-
   // remind the opening rule when it matters
   if (game.opening !== 'standard' && game.moves.length === 0) status.textContent += ' (in the middle)';
   if (game.opening !== 'standard' && game.moves.length === 2) {
     status.textContent += ` (at least ${game.opening === 'pro' ? 3 : 4} cells from the middle)`;
   }
 
-  for (const player of [1, 2]) {
+  status.classList.toggle('thinking', thinking);
+  // handy when the game is in another tab
+  document.title = !game.winner && name === 'You' && !thinking ? '(Your turn) Gomoku' : 'Gomoku';
+}
+
+function drawPlayers() {
+  for (const player of [BLACK, WHITE]) {
     const card = document.getElementById(`player-${player}`);
     card.classList.toggle('active', !game.winner && game.player === player);
+    card.querySelector('.name').textContent = playerName(player);
+
     // 5 little circles, filled with the color of the stones taken
     const captures = card.querySelector('.captures');
     captures.innerHTML = '';
@@ -67,9 +68,10 @@ function draw() {
       if (i < game.captures[player]) dot.classList.add(player === BLACK ? 'white' : 'black');
       captures.appendChild(dot);
     }
-    card.querySelector('.name').textContent = playerName(player);
   }
+}
 
+function drawMoves() {
   movesList.innerHTML = '';
   for (const move of game.moves) {
     const li = document.createElement('li');
@@ -77,7 +79,16 @@ function draw() {
     movesList.appendChild(li);
   }
   movesList.scrollTop = movesList.scrollHeight;
+}
 
+// redraws everything, called after anything changes
+function draw() {
+  // no preview stone when it's not your turn
+  const yourTurn = !thinking && game.player !== computer;
+  drawBoard(game, yourTurn ? hover : -1, hint);
+  drawStatus();
+  drawPlayers();
+  drawMoves();
   document.getElementById('sound').textContent = isMuted() ? 'Sound off' : 'Sound on';
   saveGame();
 }
