@@ -230,3 +230,12 @@ select {
     display: none;
   }
 }
+
+.credits {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.credits a {
+  color: var(--wood);
+}
