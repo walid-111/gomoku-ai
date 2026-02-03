@@ -153,7 +153,7 @@ worker.onmessage = (event) => {
 
   document.getElementById('ai-time').textContent = depth === 0
     ? 'Computer had only one choice'
-    : `Computer took ${(time / 1000).toFixed(2)}s (${depth} moves ahead)`;
+    : `Computer took ${(time / 1000).toFixed(2)}s (${depth} move${depth > 1 ? 's' : ''} ahead)`;
   makeMove(move);
 };
 
