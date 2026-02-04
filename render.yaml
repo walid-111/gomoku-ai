@@ -1,0 +1,7 @@
+# static site on render, nothing to build (the tests run as a check)
+services:
+  - type: web
+    name: gomoku
+    runtime: static
+    buildCommand: npm test
+    staticPublishPath: .
