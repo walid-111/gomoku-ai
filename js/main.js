@@ -130,8 +130,12 @@ function makeMove(index) {
   return true;
 }
 
+function gameIsOver() {
+  return game.winner !== EMPTY || game.winReason === 'draw';
+}
+
 function computerTurn() {
-  if (game.winner || game.player !== computer) return;
+  if (gameIsOver() || game.player !== computer) return;
   thinking = true;
   request++;
   draw();
@@ -177,7 +181,7 @@ canvas.addEventListener('mouseleave', () => {
 });
 
 document.getElementById('hint').addEventListener('click', () => {
-  if (thinking || game.winner || game.player === computer) return;
+  if (thinking || gameIsOver() || game.player === computer) return;
   askedHint = true;
   thinking = true;
   request++;
