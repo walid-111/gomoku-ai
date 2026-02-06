@@ -71,11 +71,11 @@ export function drawBoard(game, hover = -1, hint = -1) {
     ctx.fill();
   }
 
-  // red dots on the winning stones
+  // dots on the five: red when it won, orange when it can still be broken
   for (const i of game.winLine) {
     ctx.beginPath();
     ctx.arc(pos(i % SIZE), pos(Math.floor(i / SIZE)), cell * 0.12, 0, Math.PI * 2);
-    ctx.fillStyle = '#e53935';
+    ctx.fillStyle = game.winner ? '#e53935' : '#fb8c00';
     ctx.fill();
   }
 
