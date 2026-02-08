@@ -1,5 +1,7 @@
 # gomoku-ai
 
+**Play it here: https://gomoku-ai-b6yl.onrender.com**
+
 Gomoku with the Pente rules (captures), playable in the browser against the computer or with a friend on the same screen.
 
 ![screenshot](docs/screenshot.png)
