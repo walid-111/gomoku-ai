@@ -113,15 +113,13 @@ function makeMove(index) {
   if (!play(game, index)) return false;
   hint = -1;
   draw();
+  playSound('place');
 
   if (game.winReason === 'draw') {
     document.getElementById('game-over-title').textContent = 'Draw';
     document.getElementById('game-over-reason').textContent = 'The board is full, nobody wins.';
     gameOver.showModal();
-  } else if (!game.winner) {
-    playSound('place');
-  } else {
-    playSound(game.winner === computer ? 'loss' : 'win');
+  } else if (game.winner) {
     document.getElementById('game-over-title').textContent =
       playerName(game.winner) === 'You' ? 'You won!' : `${playerName(game.winner)} won`;
     document.getElementById('game-over-reason').textContent = `With ${game.winReason}.`;

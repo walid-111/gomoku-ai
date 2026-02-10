@@ -1,7 +1,5 @@
 const sounds = {
   place: new Audio('sounds/placing.mp3'),
-  win: new Audio('sounds/win.mp3'),
-  loss: new Audio('sounds/loss.mp3'),
 };
 
 let muted = localStorage.getItem('muted') === 'true';
